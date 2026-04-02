@@ -1,0 +1,275 @@
+body {
+    background-image: url('/movie_recommendation/frontend/images/bg.jpg');
+    background-size: cover;
+    background-position: center;
+    color: white;
+}
+
+.login-page {
+    background: url('/movie_recommendation/screenshots/login.png');
+    background-size: cover;
+    background-position: center;
+    color: white;
+}
+
+.register-page {
+    background: url('/movie_recommendation/screenshots/register.png');
+    background-size: cover;
+    background-position: center;
+    color: white;
+}
+
+/* FORM BOX */
+.form-box {
+    width: 320px;
+    margin: 120px auto;
+    padding: 25px;
+    text-align: center;
+
+    backdrop-filter: blur(12px);
+    background: rgba(0, 0, 0, 0.65);
+
+    border-radius: 15px;
+    box-shadow: 0px 0px 25px rgba(0,0,0,0.8);
+}
+
+/* TITLE */
+.form-box h2 {
+    color: #ffffff;
+    font-size: 26px;
+    margin-bottom: 15px;
+}
+
+/* INPUT */
+.form-box input {
+    width: 90%;
+    padding: 12px;
+    margin: 10px 0;
+
+    border: none;
+    border-radius: 8px;
+
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+
+    outline: none;
+}
+
+/* PLACEHOLDER */
+.form-box input::placeholder {
+    color: #ccc;
+}
+
+/* INPUT FOCUS */
+.form-box input:focus {
+    border: 1px solid #e50914;
+    box-shadow: 0 0 8px #e50914;
+}
+
+/* BUTTON */
+.form-box button {
+    width: 100%;
+    padding: 12px;
+
+    background: linear-gradient(45deg, #e50914, #ff4c4c);
+    color: white;
+
+    border: none;
+    border-radius: 8px;
+
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+/* BUTTON HOVER */
+.form-box button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px #e50914;
+}
+
+.container {
+    width: 90%;
+    margin: auto;
+
+    background: rgba(0, 0, 0, 0.7);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+h1 {
+    text-align: center;
+    color: #e50914;
+}
+
+h2 {
+    margin-top: 30px;
+    color: #fff;
+}
+
+/* Header */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logout a {
+    color: white;
+    text-decoration: none;
+    background: #e50914;
+    padding: 6px 12px;
+    border-radius: 5px;
+}
+
+/* Search */
+.search-box {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.search-box input {
+    padding: 8px;
+    width: 250px;
+    border-radius: 5px;
+    border: none;
+}
+
+.search-box button {
+    padding: 8px 12px;
+    background: #e50914;
+    border: none;
+    color: white;
+    border-radius: 5px;
+}
+
+.search-box {
+    text-align: center;
+    margin: 30px 0;
+}
+
+.search-box input {
+    width: 300px;
+    padding: 12px;
+
+    border-radius: 8px;
+    border: none;
+
+    background: rgba(255,255,255,0.1);
+    color: white;
+}
+
+.search-box input::placeholder {
+    color: #ccc;
+}
+
+.search-box button {
+    padding: 12px 18px;
+    margin-left: 10px;
+
+    background: #e50914;
+    color: white;
+
+    border: none;
+    border-radius: 8px;
+
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.search-box button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px #e50914;
+}
+
+.recommend-box {
+    width: 80%;
+    margin: 20px auto;
+    padding: 20px;
+
+    background: rgba(255,255,255,0.05);
+    border-radius: 12px;
+
+    box-shadow: 0px 0px 20px rgba(0,0,0,0.7);
+}
+
+.recommend-box p {
+    padding: 8px;
+    font-size: 16px;
+}
+
+.logout-btn {
+    background: #e50914;
+    color: white;
+    padding: 8px 15px;
+
+    border-radius: 6px;
+    text-decoration: none;
+
+    transition: 0.3s;
+}
+
+/* 🔥 HOVER EFFECT */
+.logout-btn:hover {
+    background: #ff4c4c;
+    transform: scale(1.1);
+    box-shadow: 0 0 12px #e50914;
+}
+
+.logout {
+    float: right;
+}
+
+/* Grid layout */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 15px;
+}
+
+/* Movie Card */
+.movie-card {
+    background: #1c1c1c;
+    padding: 15px;
+    border-radius: 10px;
+    transition: 0.3s;
+}
+
+.movie-card:hover {
+    transform: scale(1.05);
+}
+
+.movie-card h3 {
+    font-size: 16px;
+    color: #fff;
+}
+
+.movie-card p {
+    font-size: 12px;
+    color: #aaa;
+}
+
+/* Rating */
+.rating-box {
+    margin-top: 10px;
+}
+
+.rating-box input {
+    width: 50px;
+    padding: 5px;
+}
+
+.rating-box button {
+    background: #e50914;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+/* Recommendation box */
+.recommend-box {
+    background: #1c1c1c;
+    padding: 15px;
+    border-radius: 10px;
+}
