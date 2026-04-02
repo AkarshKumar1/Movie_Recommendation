@@ -61,8 +61,8 @@ movie_recommendation/
 ### 1️⃣ Clone Repository
 
 ```bash id="8f3z4m"
-git clone https://github.com/your-username/movie-recommendation.git
-cd movie-recommendation
+git clone https://github.com/AkarshKumar1/Movie_Recommendation.git
+cd movie_recommendation
 ```
 
 ---
