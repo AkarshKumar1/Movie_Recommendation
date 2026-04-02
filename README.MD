@@ -1,6 +1,6 @@
 # 🎬 Movie Recommendation System
 
-![Banner](screenshots/banner.png)
+![Banner](screenshots/banner1.png)
 
 > A full-stack **Movie Recommendation System** that intelligently suggests movies to users based on their preferences and ratings.
 > This project integrates **database management, backend development, and machine learning** to create a complete recommendation pipeline.
