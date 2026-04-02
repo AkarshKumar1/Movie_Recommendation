@@ -123,15 +123,15 @@ http://localhost/movie_recommendation/frontend/login.php
 
 ### 🔐 Login Page
 
-![Login](screenshots/login.png)
+![Login](frontend/login.php)
 
 ### 📝 Register Page
 
-![Register](screenshots/register.png)
+![Register](frontend/register.php)
 
 ### 🎥 Dashboard
 
-![Dashboard](screenshots/dashboard.png)
+![Dashboard](frontend/dashboard.php)
 
 ---
 
