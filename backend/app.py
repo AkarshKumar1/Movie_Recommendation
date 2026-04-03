@@ -3,48 +3,68 @@ from flask import Flask, request, jsonify
 from sklearn.metrics.pairwise import cosine_similarity
 from flask_cors import CORS
 import os
+import traceback
 
 app = Flask(__name__)
 CORS(app)
 
-# Load dataset (from backend folder)
-import os
+# Global variables
+movies = None
+ratings = None
+movie_matrix = None
+similarity_df = None
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+def load_data():
+    global movies, ratings, movie_matrix, similarity_df
 
-movies = pd.read_csv(os.path.join(BASE_DIR, "dataset", "movies.csv"))
-ratings = pd.read_csv(os.path.join(BASE_DIR, "dataset", "ratings.csv"))
-print("Files Loaded Successfully")
+    try:
+        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# Create pivot table
-movie_matrix = ratings.pivot_table(index='user_id', columns='movie_id', values='rating').fillna(0)
+        print("Loading datasets...")
 
-# Compute similarity
-similarity = cosine_similarity(movie_matrix.T)
+        movies = pd.read_csv(os.path.join(BASE_DIR, "dataset", "movies.csv"))
+        ratings = pd.read_csv(os.path.join(BASE_DIR, "dataset", "ratings.csv"))
 
-similarity_df = pd.DataFrame(similarity, index=movie_matrix.columns, columns=movie_matrix.columns)
+        movie_matrix = ratings.pivot_table(index='user_id', columns='movie_id', values='rating').fillna(0)
+
+        similarity = cosine_similarity(movie_matrix.T)
+
+        similarity_df = pd.DataFrame(similarity, index=movie_matrix.columns, columns=movie_matrix.columns)
+
+        print("Datasets loaded successfully")
+
+    except Exception as e:
+        print("ERROR LOADING DATA:")
+        traceback.print_exc()
+
+# Load data when app starts
+load_data()
+
 
 @app.route('/recommend', methods=['GET'])
 def recommend():
-    user_id = request.args.get('user_id')
+    try:
+        user_id = request.args.get('user_id')
 
-    if not user_id:
-        return jsonify(["No user provided"])
+        if not user_id:
+            return jsonify(["No user provided"])
 
-    user_id = int(user_id)
+        user_id = int(user_id)
 
-    if user_id not in movie_matrix.index:
-        return jsonify(["User not found"])
+        if user_id not in movie_matrix.index:
+            return jsonify(["User not found"])
 
-    user_ratings = movie_matrix.loc[user_id]
+        user_ratings = movie_matrix.loc[user_id]
+        fav_movie = user_ratings.idxmax()
 
-    fav_movie = user_ratings.idxmax()
+        similar_movies = similarity_df[fav_movie].sort_values(ascending=False).head(10).index
 
-    similar_movies = similarity_df[fav_movie].sort_values(ascending=False).head(10).index
+        recommended = movies[movies['movie_id'].isin(similar_movies)]['title']
 
-    recommended = movies[movies['movie_id'].isin(similar_movies)]['title']
+        return jsonify(recommended.tolist())
 
-    return jsonify(recommended.tolist())
+    except Exception as e:
+        return jsonify(["Error occurred"]), 500
 
 
 if __name__ == "__main__":
