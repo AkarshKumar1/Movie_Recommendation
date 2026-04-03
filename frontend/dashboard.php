@@ -9,21 +9,34 @@ if (!isset($_SESSION['user'])) {
 
 $user = $_SESSION['user'];
 
+// Get user_id
 $res = $conn->query("SELECT user_id FROM users WHERE username='$user'");
 $row = $res->fetch_assoc();
 $user_id = $row['user_id'];
 
+// 🔥 TEMP TEST (Uncomment if needed)
+// $user_id = 1;
+
 $search = $_GET['search'] ?? '';
 
+// Movie search
 if ($search != '') {
     $result = $conn->query("SELECT * FROM movies WHERE title LIKE '%$search%' LIMIT 50");
 } else {
     $result = $conn->query("SELECT * FROM movies LIMIT 50");
 }
 
-$url = "http://127.0.0.1:5000/recommend?user_id=$user_id";
+// 🔥 CALL FLASK API
+$url = "https://movie-recommendation-api-mpsa.onrender.com/recommend?user_id=$user_id";
+
+// Fetch data safely
 $response = @file_get_contents($url);
-$recommended_movies = $response ? json_decode($response) : [];
+
+if ($response === FALSE) {
+    $recommended_movies = [];
+} else {
+    $recommended_movies = json_decode($response, true); // ✅ important fix
+}
 ?>
 
 <!-- SEARCH BOX -->
@@ -34,12 +47,12 @@ $recommended_movies = $response ? json_decode($response) : [];
     </form>
 </div>
 
-<!-- Recommendations -->
+<!-- RECOMMENDATIONS -->
 <h2>🎯 Recommended For You</h2>
 
 <div class="recommend-box">
 <?php
-if (!empty($recommended_movies)) {
+if (!empty($recommended_movies) && is_array($recommended_movies)) {
     foreach ($recommended_movies as $movie) {
         echo "<p>⭐ $movie</p>";
     }
@@ -49,7 +62,7 @@ if (!empty($recommended_movies)) {
 ?>
 </div>
 
-<!-- Movie Grid -->
+<!-- MOVIES -->
 <h2>🎥 Movies</h2>
 
 <div class="grid">
@@ -64,6 +77,10 @@ if (!empty($recommended_movies)) {
             <button type="submit">⭐ Rate</button>
         </form>
     </div>
+<?php } ?>
+</div>
+
+<?php include 'partials/footer.php'; ?>
 <?php } ?>
 </div>
 
