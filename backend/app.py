@@ -20,21 +20,38 @@ def load_data():
     try:
         BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-        print("Loading datasets...")
+        print("BASE DIR:", BASE_DIR)
 
-        movies = pd.read_csv(os.path.join(BASE_DIR, "dataset", "movies.csv"))
-        ratings = pd.read_csv(os.path.join(BASE_DIR, "dataset", "ratings.csv"))
+        dataset_path = os.path.join(BASE_DIR, "dataset")
+        print("DATASET PATH:", dataset_path)
+
+        print("FILES IN BASE DIR:", os.listdir(BASE_DIR))
+
+        if os.path.exists(dataset_path):
+            print("FILES IN DATASET:", os.listdir(dataset_path))
+        else:
+            print("DATASET FOLDER NOT FOUND ❌")
+
+        movies_path = os.path.join(dataset_path, "movies.csv")
+        ratings_path = os.path.join(dataset_path, "ratings.csv")
+
+        print("MOVIES PATH:", movies_path)
+        print("RATINGS PATH:", ratings_path)
+
+        movies = pd.read_csv(movies_path)
+        ratings = pd.read_csv(ratings_path)
+
+        print("CSV FILES LOADED ✅")
 
         movie_matrix = ratings.pivot_table(index='user_id', columns='movie_id', values='rating').fillna(0)
-
         similarity = cosine_similarity(movie_matrix.T)
-
         similarity_df = pd.DataFrame(similarity, index=movie_matrix.columns, columns=movie_matrix.columns)
 
-        print("Datasets loaded successfully")
+        print("MODEL BUILT SUCCESSFULLY ✅")
 
     except Exception as e:
-        print("ERROR LOADING DATA:")
+        print("🔥 ERROR DURING STARTUP:")
+        import traceback
         traceback.print_exc()
 
 # Load data when app starts
