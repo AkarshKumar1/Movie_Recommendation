@@ -1,20 +1,19 @@
-import mysql.connector
 import pandas as pd
 from flask import Flask, request, jsonify
 from sklearn.metrics.pairwise import cosine_similarity
+from flask_cors import CORS
+import os
 
 app = Flask(__name__)
+CORS(app)
 
-# Connect DB
-conn = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="",
-    database="movie_recommendation"
-)
+# Load dataset (from backend folder)
+import os
 
-movies = pd.read_sql("SELECT * FROM movies", conn)
-ratings = pd.read_sql("SELECT user_id, movie_id, rating FROM ratings", conn)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+movies = pd.read_csv(os.path.join(BASE_DIR, "dataset", "movies.csv"))
+ratings = pd.read_csv(os.path.join(BASE_DIR, "dataset", "ratings.csv"))
 
 # Create pivot table
 movie_matrix = ratings.pivot_table(index='user_id', columns='movie_id', values='rating').fillna(0)
@@ -33,9 +32,11 @@ def recommend():
 
     user_id = int(user_id)
 
+    if user_id not in movie_matrix.index:
+        return jsonify(["User not found"])
+
     user_ratings = movie_matrix.loc[user_id]
 
-    # Get highest rated movie by user
     fav_movie = user_ratings.idxmax()
 
     similar_movies = similarity_df[fav_movie].sort_values(ascending=False).head(10).index
@@ -44,8 +45,6 @@ def recommend():
 
     return jsonify(recommended.tolist())
 
-if __name__ == '__main__':
-    app.run(debug=True)
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))
