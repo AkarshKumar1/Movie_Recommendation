@@ -14,6 +14,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 movies = pd.read_csv(os.path.join(BASE_DIR, "dataset", "movies.csv"))
 ratings = pd.read_csv(os.path.join(BASE_DIR, "dataset", "ratings.csv"))
+print("Files Loaded Successfully")
 
 # Create pivot table
 movie_matrix = ratings.pivot_table(index='user_id', columns='movie_id', values='rating').fillna(0)
