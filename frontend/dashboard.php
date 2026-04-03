@@ -12,8 +12,8 @@ $user = $_SESSION['user'];
 // Get user_id
 $res = $conn->query("SELECT user_id FROM users WHERE username='$user'");
 $row = $res->fetch_assoc();
-$user_id = $row['user_id'];
-
+// $user_id = $row['user_id'];
+$user_id = 1;
 // 🔥 TEMP TEST (Uncomment if needed)
 // $user_id = 1;
 
