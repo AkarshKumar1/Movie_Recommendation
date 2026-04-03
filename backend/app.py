@@ -3,7 +3,6 @@ from flask import Flask, request, jsonify
 from sklearn.metrics.pairwise import cosine_similarity
 from flask_cors import CORS
 import os
-import traceback
 
 app = Flask(__name__)
 CORS(app)
@@ -13,53 +12,45 @@ movies = None
 ratings = None
 movie_matrix = None
 similarity_df = None
+data_loaded = False
+
 
 def load_data():
-    global movies, ratings, movie_matrix, similarity_df
+    global movies, ratings, movie_matrix, similarity_df, data_loaded
+
+    if data_loaded:
+        return
 
     try:
         BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-        print("BASE DIR:", BASE_DIR)
+        print("Loading datasets...")
 
-        dataset_path = os.path.join(BASE_DIR, "dataset")
-        print("DATASET PATH:", dataset_path)
-
-        print("FILES IN BASE DIR:", os.listdir(BASE_DIR))
-
-        if os.path.exists(dataset_path):
-            print("FILES IN DATASET:", os.listdir(dataset_path))
-        else:
-            print("DATASET FOLDER NOT FOUND ❌")
-
-        movies_path = os.path.join(dataset_path, "movies.csv")
-        ratings_path = os.path.join(dataset_path, "ratings.csv")
-
-        print("MOVIES PATH:", movies_path)
-        print("RATINGS PATH:", ratings_path)
-
-        movies = pd.read_csv(movies_path)
-        ratings = pd.read_csv(ratings_path)
-
-        print("CSV FILES LOADED ✅")
+        movies = pd.read_csv(os.path.join(BASE_DIR, "dataset", "movies.csv"))
+        ratings = pd.read_csv(os.path.join(BASE_DIR, "dataset", "ratings.csv"))
 
         movie_matrix = ratings.pivot_table(index='user_id', columns='movie_id', values='rating').fillna(0)
+
         similarity = cosine_similarity(movie_matrix.T)
+
         similarity_df = pd.DataFrame(similarity, index=movie_matrix.columns, columns=movie_matrix.columns)
 
-        print("MODEL BUILT SUCCESSFULLY ✅")
+        data_loaded = True
+        print("Data loaded successfully")
 
     except Exception as e:
-        print("🔥 ERROR DURING STARTUP:")
-        import traceback
-        traceback.print_exc()
+        print("ERROR:", e)
 
-# Load data when app starts
-load_data()
+
+@app.route('/')
+def home():
+    return "API is running ✅"
 
 
 @app.route('/recommend', methods=['GET'])
 def recommend():
+    load_data()   # 🔥 LOAD HERE (important)
+
     try:
         user_id = request.args.get('user_id')
 
