@@ -1,173 +1,151 @@
-# 🎬 Movie Recommendation System
+🎬 Movie Recommendation System
 
-![Banner](screenshots/banner1.png)
+"Banner" (screenshots/banner1.png)
 
-> A full-stack **Movie Recommendation System** that intelligently suggests movies to users based on their preferences and ratings.
-> This project integrates **database management, backend development, and machine learning** to create a complete recommendation pipeline.
-> Users can register, log in, rate movies, and receive personalized recommendations generated using **collaborative filtering algorithms** implemented in Python (Flask).
-> The system demonstrates real-world concepts like **user-item interaction, REST API integration, and full-stack development**, all wrapped in a modern Netflix-inspired UI.
-
----
-
-## 🚀 Features
-
-* 🔐 User Authentication (Login / Register)
-* 🎥 Browse Movies from Database
-* ⭐ Rate Movies (1–5)
-* 🎯 Personalized Recommendations (ML-based)
-* 🔍 Search Movies
-* 🌙 Modern Dark UI with Glassmorphism Design
-* ⚡ Real-time recommendation system using Flask API
+«A full-stack Movie Recommendation System that suggests movies based on user preferences and ratings.
+This project combines PHP, MySQL, and a Machine Learning API (Flask) to deliver personalized recommendations in real time.
+The frontend is deployed using InfinityFree, while the ML backend is hosted on Render.»
 
 ---
 
-## 🧠 Tech Stack
+🌐 Live Demo
 
-| Layer            | Technology                           |
-| ---------------- | ------------------------------------ |
-| Frontend         | HTML, CSS, JavaScript                |
-| Backend          | PHP                                  |
-| Database         | MySQL                                |
-| Machine Learning | Python (Flask, Pandas, Scikit-learn) |
+- 🔗 Frontend (Website): https://akarshkumar.gt.tc
+- 🤖 ML API (Render): https://movie-recommendation-api-mpsa.onrender.com
 
 ---
 
-## 📁 Project Structure
+🚀 Features
 
-```plaintext id="yg8p8h"
+- 🔐 User Authentication (Login / Register / Logout)
+- 🎥 Browse Movies from Database
+- ⭐ Rate Movies (1–5 scale)
+- 🎯 Personalized Recommendations (ML-based)
+- 🔍 Search Movies
+- 🌙 Modern UI with Glassmorphism Design
+- ⚡ Real-time recommendations via deployed API
+
+---
+
+🧠 Tech Stack
+
+Layer| Technology
+Frontend| HTML, CSS
+Backend| PHP
+Database| MySQL (InfinityFree)
+Machine Learning| Python (Flask, Pandas, Scikit-learn)
+Deployment| InfinityFree + Render
+
+---
+
+📁 Project Structure
+
 movie_recommendation/
-├── backend/
-│   └── app.py                # Flask ML API
-├── frontend/
-│   ├── css/style.css        # UI styling
-│   ├── js/script.js         # JavaScript
-│   ├── partials/            # Header & Footer
-│   ├── dashboard.php        # Main page
-│   ├── login.php
-│   ├── register.php
-│   ├── rate.php
-│   └── logout.php
-├── dataset/                 # Movie dataset (CSV)
-├── database/                # SQL schema / database files
-├── screenshots/             # UI images (banner, login, register)
-├── config.php
-└── README.md
-```
+├── app.py                 # Python script for handling movie recommendation logic
+│
+├── css/
+│   └── style.css         # Contains all UI styling for the website
+│
+├── images/
+│   └── (assets)          # Stores background and UI images used in the project
+│
+├── partials/
+│   ├── header.php        # Common header (navbar + CSS/JS links)
+│   └── footer.php        # Common footer for all pages
+│
+├── index.php             # Login page for user authentication
+├── register.php          # User registration page
+├── dashboard.php         # Main dashboard with movies and recommendations
+├── rate.php              # Handles movie rating submission
+├── logout.php            # Ends user session and logs out
+├── config.php            # Database connection configuration
+│
+├── screenshots/          # Contains images used in README (UI previews)
+└── README.md             # Project documentation
 
 ---
 
-## ⚙️ Setup Instructions
+⚙️ How It Works
 
-### 1️⃣ Clone Repository
-
-```bash id="8f3z4m"
-git clone https://github.com/AkarshKumar1/Movie_Recommendation.git
-cd movie_recommendation
-```
-
----
-
-### 2️⃣ Setup Database
-
-* Open **phpMyAdmin / MySQL**
-* Create database:
-
-```sql id="zv1kpf"
-CREATE DATABASE movie_recommendation;
-```
-
-* Import your dataset or SQL schema from `/database`
+- Users register and log in
+- Movies are fetched from MySQL database
+- Users rate movies
+- Ratings are sent to the Flask ML API (Render)
+- API uses Collaborative Filtering (Cosine Similarity)
+- Returns personalized movie recommendations
 
 ---
 
-### 3️⃣ Start XAMPP
+🤖 ML Recommendation API
 
-* Start **Apache**
-* Start **MySQL**
+🔹 Hosted on Render
 
----
+- Endpoint:
 
-### 4️⃣ Run Flask Backend
+https://movie-recommendation-api-mpsa.onrender.com/recommend?user_id=1
 
-```bash id="c2m6rq"
-cd backend
-python app.py
-```
-
-👉 Runs at:
-
-```id="91i4ks"
-http://127.0.0.1:5000/
-```
+- Input: "user_id"
+- Output: List of recommended movies
 
 ---
 
-### 5️⃣ Open Project
+🖼️ Screenshots
 
-```id="d1y3lc"
-http://localhost/movie_recommendation/frontend/login.php
-```
+🔐 Login Page
 
----
+"Login" (screenshots/login-web.png)
 
-## 🤖 How It Works
+📝 Register Page
 
-* Uses **Collaborative Filtering**
-* Builds a **User-Movie Rating Matrix**
-* Applies **Cosine Similarity**
-* Returns personalized movie recommendations via Flask API
+"Register" (screenshots/register-web.png)
 
----
+🎥 Dashboard
 
-## 🖼️ Screenshots
-
-### 🔐 Login Page
-
-![Login](screenshots/login-ui.png)
-
-### 📝 Register Page
-
-![Register](screenshots/register-ui.png)
-
-### 🎥 Dashboard
-
-![Dashboard](screenshots/dashboard-ui.png)
+"Dashboard" (screenshots/dashboard-web.png)
 
 ---
 
-## 🎨 UI Highlights
+🎨 UI Highlights
 
-* 🌙 Dark cinematic theme
-* 🧊 Glassmorphism login/register forms
-* 🔥 Hover animations (buttons & logout)
-* 📦 Clean and structured layout
-
----
-
-## 📊 Dataset
-
-* MovieLens Dataset (Kaggle)
-* Contains:
-
-  * Movies
-  * Ratings
-  * Genres
+- 🌙 Cinematic movie-themed background
+- 🧊 Glassmorphism forms
+- 🔥 Smooth hover effects
+- 🎬 Clean dashboard layout
 
 ---
 
-## 💡 Future Improvements
+📊 Dataset
 
-* ⭐ Star-based rating system (UI)
-* 🎞️ Movie posters integration
-* 📱 Mobile responsiveness
-* ⚡ Performance optimization (caching)
-* 🤖 Advanced ML models
+- MovieLens Dataset (Kaggle)
+
+- Includes:
+  
+  - Movies
+  - Ratings
+  - Genres
 
 ---
 
-## 👨‍💻 Author
+💡 Future Improvements
 
-**Akarsh Kumar**
+- ⭐ Star-based rating UI
+- 🎞️ Movie posters integration
+- 📱 Mobile responsive design
+- 🔒 Use bcrypt instead of md5
+- ⚡ Improve API performance
+
+---
+
+⚠️ Note
+
+- This project is for learning/demo purposes
+- Basic security implemented (can be improved)
+
+---
+
+👤 Author
+
+Akarsh Kumar
 B.Tech (AI & ML)
 
 ---
