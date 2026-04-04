@@ -1,21 +1,21 @@
-🎬 Movie Recommendation System
+# 🎬 Movie Recommendation System
 
-"Banner" (screenshots/banner1.png)
+![Banner](screenshots/banner1.png)
 
-«A full-stack Movie Recommendation System that suggests movies based on user preferences and ratings.
-This project combines PHP, MySQL, and a Machine Learning API (Flask) to deliver personalized recommendations in real time.
-The frontend is deployed using InfinityFree, while the ML backend is hosted on Render.»
-
----
-
-🌐 Live Demo
-
-- 🔗 Frontend (Website): https://akarshkumar.gt.tc
-- 🤖 ML API (Render): https://movie-recommendation-api-mpsa.onrender.com
+> A full-stack **Movie Recommendation System** that suggests movies based on user preferences and ratings.  
+> This project combines **PHP, MySQL, and a Machine Learning API (Flask)** to deliver personalized recommendations in real time.  
+> The frontend is deployed using **InfinityFree**, while the ML backend is hosted on **Render**.
 
 ---
 
-🚀 Features
+## 🌐 Live Demo
+
+- 🔗 **Frontend (Website):** https://akarshkumar.gt.tc  
+- 🤖 **ML API (Render):** https://movie-recommendation-api-mpsa.onrender.com  
+
+---
+
+## 🚀 Features
 
 - 🔐 User Authentication (Login / Register / Logout)
 - 🎥 Browse Movies from Database
@@ -27,21 +27,23 @@ The frontend is deployed using InfinityFree, while the ML backend is hosted on R
 
 ---
 
-🧠 Tech Stack
+## 🧠 Tech Stack
 
-Layer| Technology
-Frontend| HTML, CSS
-Backend| PHP
-Database| MySQL (InfinityFree)
-Machine Learning| Python (Flask, Pandas, Scikit-learn)
-Deployment| InfinityFree + Render
+| Layer            | Technology                           |
+| ---------------- | ------------------------------------ |
+| Frontend         | HTML, CSS                            |
+| Backend          | PHP                                  |
+| Database         | MySQL (InfinityFree)                 |
+| Machine Learning | Python (Flask, Pandas, Scikit-learn) |
+| Deployment       | InfinityFree + Render                |
 
 ---
 
-📁 Project Structure
+## 📁 Project Structure
 
+```plaintext
 movie_recommendation/
-├── app.py                 # Python script for handling movie recommendation logic
+├── app.py                # Python script for handling movie recommendation logic
 │
 ├── css/
 │   └── style.css         # Contains all UI styling for the website
@@ -63,87 +65,118 @@ movie_recommendation/
 ├── screenshots/          # Contains images used in README (UI previews)
 └── README.md             # Project documentation
 
----
-
-⚙️ How It Works
-
-- Users register and log in
-- Movies are fetched from MySQL database
-- Users rate movies
-- Ratings are sent to the Flask ML API (Render)
-- API uses Collaborative Filtering (Cosine Similarity)
-- Returns personalized movie recommendations
 
 ---
 
-🤖 ML Recommendation API
+## ⚙️ How It Works
 
-🔹 Hosted on Render
+* Users register and log in
 
-- Endpoint:
+* Movies are fetched from MySQL database
+
+* Users rate movies
+
+* Ratings are sent to the Flask ML API (Render)
+
+* API uses Collaborative Filtering (Cosine Similarity)
+
+* Returns personalized movie recommendations
+
+
+
+---
+
+## 🤖 ML Recommendation API
+
+### Hosted on Render
+
+* Endpoint:
+
 
 https://movie-recommendation-api-mpsa.onrender.com/recommend?user_id=1
 
-- Input: "user_id"
-- Output: List of recommended movies
+Input: user_id
+
+Output: List of recommended movies
+
+
 
 ---
 
-🖼️ Screenshots
+## 🖼️ Screenshots
 
-🔐 Login Page
+### 🔐 Login Page
 
-"Login" (screenshots/login-web.png)
+![Login](screenshots/login-web.png)
 
-📝 Register Page
+### 📝 Register Page
 
-"Register" (screenshots/register-web.png)
+![Register](screenshots/register-web.png)
 
-🎥 Dashboard
+### 🎥 Dashboard
 
-"Dashboard" (screenshots/dashboard-web.png)
+![Dashboard](screenshots/dashboard-web.png)
 
----
-
-🎨 UI Highlights
-
-- 🌙 Cinematic movie-themed background
-- 🧊 Glassmorphism forms
-- 🔥 Smooth hover effects
-- 🎬 Clean dashboard layout
 
 ---
 
-📊 Dataset
+## 🎨 UI Highlights
 
-- MovieLens Dataset (Kaggle)
+* 🌙 Cinematic movie-themed background
 
-- Includes:
-  
-  - Movies
-  - Ratings
-  - Genres
+* 🧊 Glassmorphism forms
 
----
+* 🔥 Smooth hover effects
 
-💡 Future Improvements
+* 🎬 Clean dashboard layout
 
-- ⭐ Star-based rating UI
-- 🎞️ Movie posters integration
-- 📱 Mobile responsive design
-- 🔒 Use bcrypt instead of md5
-- ⚡ Improve API performance
+
 
 ---
 
-⚠️ Note
+## 📊 Dataset
 
-- This project is for learning/demo purposes
-- Basic security implemented (can be improved)
+* MovieLens Dataset (Kaggle)
+
+* Includes:
+
+   * Movies
+
+   * Ratings
+
+   * Genres
+
+
+
 
 ---
 
-👤 Author
+## 💡 Future Improvements
+
+* ⭐ Star-based rating UI
+
+* 🎞️ Movie posters integration
+
+* 📱 Mobile responsive design
+
+* 🔒 Use bcrypt instead of md5
+
+* ⚡ Improve API performance
+
+
+---
+
+## ⚠️ Note
+
+This project is for learning/demo purposes
+
+Basic security implemented (can be improved)
+
+
+
+---
+
+## 👤 Author
 
 Akarsh Kumar
 B.Tech (AI & ML)
