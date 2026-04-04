@@ -15,6 +15,34 @@
 
 ---
 
+## 🔗 Access Pages
+
+You can directly explore different parts of the application:
+
+- 🔐 **Login Page:**  
+  https://akarshkumar.gt.tc/index.php
+
+- 📝 **Register Page:**  
+  https://akarshkumar.gt.tc/register.php
+
+- 🎥 **Dashboard (after login):**  
+  https://akarshkumar.gt.tc/dashboard.php
+
+> ⚠️ Note: You must log in to access the dashboard and receive recommendations.
+
+---
+
+## 🧪 Test Credentials
+
+You can use the following demo account to test the application:
+
+- 👤 **Username:** testuser  
+- 🔑 **Password:** 123456  
+
+> ⚠️ Note: This is a demo account. You can also register a new account.
+
+---
+
 ## 🚀 Features
 
 - 🔐 User Authentication (Login / Register / Logout)
