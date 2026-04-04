@@ -64,7 +64,7 @@ movie_recommendation/
 │
 ├── screenshots/          # Contains images used in README (UI previews)
 └── README.md             # Project documentation
-
+```
 
 ---
 
