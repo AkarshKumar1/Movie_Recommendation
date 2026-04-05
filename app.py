@@ -44,7 +44,7 @@ def load_data():
 
 @app.route('/')
 def home():
-    return "API is running ✅"
+    return "API Version 2 (Updated Logic) is running ✅"
 
 
 @app.route('/recommend', methods=['GET'])
