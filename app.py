@@ -9,27 +9,23 @@ CORS(app)
 
 movies = None
 ratings = None
-data_loaded = False
 
 
 def load_data():
-    global movies, ratings, data_loaded
-
-    if data_loaded:
-        return
+    global movies, ratings
 
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
     print("Loading datasets...")
 
-    # ✅ Load movies safely
+    # ✅ Load movies
     try:
         movies = pd.read_csv(os.path.join(BASE_DIR, "dataset", "movies.csv"))
     except Exception as e:
         print("Error loading movies:", e)
         movies = pd.DataFrame(columns=["movie_id", "title", "genres"])
 
-    # ✅ Load ratings from PHP API safely
+    # ✅ Load ratings from PHP API (ALWAYS FRESH)
     try:
         response = requests.get(
             "https://akarshkumar.gt.tc/get_ratings.php",
@@ -44,7 +40,7 @@ def load_data():
         else:
             ratings = pd.DataFrame(data)
 
-            # Convert types safely
+            # Convert safely
             ratings['user_id'] = pd.to_numeric(ratings['user_id'], errors='coerce')
             ratings['movie_id'] = pd.to_numeric(ratings['movie_id'], errors='coerce')
             ratings['rating'] = pd.to_numeric(ratings['rating'], errors='coerce')
@@ -55,7 +51,6 @@ def load_data():
         print("Error fetching ratings:", e)
         ratings = pd.DataFrame(columns=["user_id", "movie_id", "rating"])
 
-    data_loaded = True
     print("Data loaded successfully")
 
 
@@ -66,7 +61,7 @@ def home():
 
 @app.route('/recommend', methods=['GET'])
 def recommend():
-    load_data()
+    load_data()  # 🔥 ALWAYS reload fresh data
 
     try:
         user_id = request.args.get('user_id')
@@ -83,7 +78,6 @@ def recommend():
         if user_ratings.empty:
 
             if ratings.empty:
-                # fallback if no ratings exist at all
                 return jsonify(movies.head(10)['title'].tolist())
 
             popular = (
@@ -108,13 +102,13 @@ def recommend():
         # Get genres of top movies
         top_genres = movies[movies['movie_id'].isin(top_movie_ids)]['genres']
 
-        # Recommend based on similar genres
+        # Recommend based on similar genres (simple match)
         recommended = movies[
             (movies['genres'].isin(top_genres)) &
             (~movies['movie_id'].isin(rated_movie_ids))
         ]
 
-        # 🔥 Fallback if not enough
+        # 🔥 Fallback if not enough results
         if recommended.shape[0] < 10:
             extra = movies[~movies['movie_id'].isin(rated_movie_ids)]
             recommended = pd.concat([recommended, extra]).drop_duplicates()
