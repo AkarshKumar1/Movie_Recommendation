@@ -3,6 +3,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
 import requests
+import random
 
 app = Flask(__name__)
 CORS(app)
@@ -44,7 +45,7 @@ def load_data():
 
 @app.route('/')
 def home():
-    return "API Version 2 (Updated Logic) is running ✅"
+    return "API Version FINAL (Dynamic Recommendations) ✅"
 
 
 @app.route('/recommend', methods=['GET'])
@@ -57,57 +58,62 @@ def recommend():
 
         user_id = int(user_id)
 
-        movies, ratings = load_data()  # 🔥 always fresh data
+        movies, ratings = load_data()
 
         user_ratings = ratings[ratings['user_id'] == user_id]
 
-        # 🔥 CASE 1: No ratings → popular movies
+        # 🔥 CASE 1: New user → random popular
         if user_ratings.empty:
 
             if ratings.empty:
-                return jsonify(movies.head(10)['title'].tolist())
+                return jsonify(movies.sample(10)['title'].tolist())
 
-            popular = (
+            popular_ids = (
                 ratings.groupby('movie_id')['rating']
                 .mean()
                 .sort_values(ascending=False)
-                .head(10)
+                .head(20)
                 .index
             )
 
-            recommended = movies[movies['movie_id'].isin(popular)]
-            return jsonify(recommended['title'].tolist())
+            recommended = movies[movies['movie_id'].isin(popular_ids)]
 
-        # 🔥 CASE 2: User has ratings
+            if recommended.empty:
+                recommended = movies.sample(10)
+
+            return jsonify(recommended.head(10)['title'].tolist())
+
+        # 🔥 CASE 2: Existing user
 
         rated_movie_ids = user_ratings['movie_id'].tolist()
 
-        # Get top rated movie by user
+        # Try smart recommendation
         top_movie = user_ratings.sort_values(by='rating', ascending=False).iloc[0]
         top_movie_id = top_movie['movie_id']
 
-        # Get that movie's genres
         top_movie_row = movies[movies['movie_id'] == top_movie_id]
 
-        if top_movie_row.empty:
-            return jsonify(movies.head(10)['title'].tolist())
+        if not top_movie_row.empty:
+            top_genres = str(top_movie_row.iloc[0]['genres']).split('|')
 
-        top_genres = top_movie_row.iloc[0]['genres'].split('|')
+            def is_similar(genres):
+                return any(g in str(genres).split('|') for g in top_genres)
 
-        # Recommend movies that share ANY genre
-        def is_similar(genres):
-            return any(g in genres.split('|') for g in top_genres)
+            recommended = movies[
+                movies['genres'].apply(is_similar) &
+                (~movies['movie_id'].isin(rated_movie_ids))
+            ]
 
-        recommended = movies[
-            movies['genres'].apply(is_similar) &
-            (~movies['movie_id'].isin(rated_movie_ids))
-        ]
+            if recommended.shape[0] >= 10:
+                return jsonify(recommended.head(10)['title'].tolist())
 
-        # 🔥 fallback (but now rarely used)
-        if recommended.shape[0] < 10:
-            recommended = movies[~movies['movie_id'].isin(rated_movie_ids)]
+        # 🔥 FINAL FALLBACK (GUARANTEED DIFFERENT RESULTS)
+        remaining = movies[~movies['movie_id'].isin(rated_movie_ids)]
 
-        recommended = recommended.head(10)
+        if remaining.empty:
+            remaining = movies
+
+        recommended = remaining.sample(min(10, len(remaining)))
 
         return jsonify(recommended['title'].tolist())
 
