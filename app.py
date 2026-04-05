@@ -32,7 +32,6 @@ def load_data():
 def home():
     return "API is running ✅"
 
-
 @app.route('/recommend', methods=['GET'])
 def recommend():
     load_data()
@@ -48,24 +47,31 @@ def recommend():
         # Get user's ratings
         user_ratings = ratings[ratings['user_id'] == user_id]
 
-        # 🔥 NEW USER CASE
-       if user_ratings.empty:
-         try:
+        # ✅ FIXED INDENTATION
+        if user_ratings.empty:
             popular = (
-              ratings.groupby('movie_id')['rating']
-               .mean()
-               .sort_values(ascending=False)
-               .head(10)
-               .index
-             )
+                ratings.groupby('movie_id')['rating']
+                .mean()
+                .sort_values(ascending=False)
+                .head(10)
+                .index
+            )
 
-        # safer filtering (no crash)
-        recommended = movies[movies['movie_id'].isin(popular)]
+            recommended = movies[movies['movie_id'].isin(popular)]
 
-        return jsonify(recommended['title'].tolist())
+            return jsonify(recommended['title'].tolist())
+
+        # If user has ratings
+        top_movie_id = user_ratings.sort_values(by='rating', ascending=False).iloc[0]['movie_id']
+
+        similar_movies = movies[movies['movie_id'] != top_movie_id].head(10)
+
+        return jsonify(similar_movies['title'].tolist())
 
     except Exception as e:
-        return jsonify(["Error in recommendation"]), 500
+        return jsonify([str(e)]), 500
+
+    
 
         # Movies already rated
         rated_movie_ids = user_ratings['movie_id'].tolist()
