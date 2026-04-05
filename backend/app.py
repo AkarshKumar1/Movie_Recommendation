@@ -3,7 +3,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
 
-app = Flask(__name__)
+app = Flask(_name_)
 CORS(app)
 
 movies = None
@@ -17,7 +17,7 @@ def load_data():
     if data_loaded:
         return
 
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    BASE_DIR = os.path.dirname(os.path.abspath(_file_))
 
     print("Loading datasets...")
 
@@ -45,23 +45,45 @@ def recommend():
 
         user_id = int(user_id)
 
-        # Get user's rated movies
+        # Get user's ratings
         user_ratings = ratings[ratings['user_id'] == user_id]
 
+        # 🔥 NEW USER CASE
         if user_ratings.empty:
-            return jsonify(["No ratings found for user"])
+            # return top popular movies
+            popular = ratings.groupby('movie_id')['rating'].mean().sort_values(ascending=False).head(10)
+            recommended = movies[movies['movie_id'].isin(popular.index)]
+            return jsonify(recommended['title'].tolist())
 
-        # Get top rated movie
-        top_movie_id = user_ratings.sort_values(by='rating', ascending=False).iloc[0]['movie_id']
+        # Movies already rated
+        rated_movie_ids = user_ratings['movie_id'].tolist()
 
-        # Recommend movies with similar IDs (simple logic)
-        similar_movies = movies[movies['movie_id'] != top_movie_id].head(10)
+        # Get top 3 highest rated movies by user
+        top_movies = user_ratings.sort_values(by='rating', ascending=False).head(3)
+        top_movie_ids = top_movies['movie_id'].tolist()
 
-        return jsonify(similar_movies['title'].tolist())
+        # Get genres of top movies
+        top_genres = movies[movies['movie_id'].isin(top_movie_ids)]['genres']
+
+        # Recommend based on similar genres
+        recommended = movies[
+            (movies['genres'].isin(top_genres)) &
+            (~movies['movie_id'].isin(rated_movie_ids))
+        ]
+
+        # If not enough recommendations → fallback
+        if recommended.shape[0] < 10:
+            extra = movies[~movies['movie_id'].isin(rated_movie_ids)]
+            recommended = pd.concat([recommended, extra]).drop_duplicates()
+
+        recommended = recommended.head(10)
+
+        return jsonify(recommended['title'].tolist())
 
     except Exception as e:
+        print("Error:", e)
         return jsonify(["Error occurred"]), 500
 
 
-if __name__ == "__main__":
-    app.run()
+if _name_ == "_main_":
+    app.run(host="0.0.0.0", port=10000)
