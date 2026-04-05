@@ -7,51 +7,39 @@ import requests
 app = Flask(__name__)
 CORS(app)
 
-movies = None
-ratings = None
-
 
 def load_data():
-    global movies, ratings
-
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-    print("Loading datasets...")
-
-    # ✅ Load movies
+    # Load movies
     try:
         movies = pd.read_csv(os.path.join(BASE_DIR, "dataset", "movies.csv"))
-    except Exception as e:
-        print("Error loading movies:", e)
+    except:
         movies = pd.DataFrame(columns=["movie_id", "title", "genres"])
 
-    # ✅ Load ratings from PHP API (LIVE DATA)
+    # Load ratings from PHP API
     try:
         response = requests.get(
             "https://akarshkumar.gt.tc/get_ratings.php",
             timeout=10
         )
-
         data = response.json()
 
         if not data:
-            print("No ratings found → using empty dataset")
             ratings = pd.DataFrame(columns=["user_id", "movie_id", "rating"])
         else:
             ratings = pd.DataFrame(data)
 
-            # Convert safely
             ratings['user_id'] = pd.to_numeric(ratings['user_id'], errors='coerce')
             ratings['movie_id'] = pd.to_numeric(ratings['movie_id'], errors='coerce')
             ratings['rating'] = pd.to_numeric(ratings['rating'], errors='coerce')
 
             ratings = ratings.dropna()
 
-    except Exception as e:
-        print("Error fetching ratings:", e)
+    except:
         ratings = pd.DataFrame(columns=["user_id", "movie_id", "rating"])
 
-    print("Data loaded successfully")
+    return movies, ratings
 
 
 @app.route('/')
@@ -61,8 +49,6 @@ def home():
 
 @app.route('/recommend', methods=['GET'])
 def recommend():
-    load_data()  # 🔥 ALWAYS fetch latest data
-
     try:
         user_id = request.args.get('user_id')
 
@@ -71,10 +57,11 @@ def recommend():
 
         user_id = int(user_id)
 
-        # ✅ Get user's ratings
+        movies, ratings = load_data()  # 🔥 always fresh data
+
         user_ratings = ratings[ratings['user_id'] == user_id]
 
-        # 🔥 CASE 1: No ratings → show popular movies
+        # 🔥 CASE 1: No ratings → popular movies
         if user_ratings.empty:
 
             if ratings.empty:
@@ -95,21 +82,27 @@ def recommend():
 
         rated_movie_ids = user_ratings['movie_id'].tolist()
 
-        # ⭐ Top 3 rated movies
+        # Top 3 movies
         top_movies = user_ratings.sort_values(by='rating', ascending=False).head(3)
         top_movie_ids = top_movies['movie_id'].tolist()
 
-        # 🔥 FIXED LOGIC: partial genre matching (IMPORTANT)
-        top_genres = "|".join(
-            movies[movies['movie_id'].isin(top_movie_ids)]['genres']
-        )
+        # 🔥 CORRECT GENRE MATCHING
+        top_genres_list = movies[movies['movie_id'].isin(top_movie_ids)]['genres'].tolist()
+
+        genre_set = set()
+        for g in top_genres_list:
+            for item in str(g).split('|'):
+                genre_set.add(item.strip())
+
+        def match_genre(genres):
+            return any(g in genre_set for g in str(genres).split('|'))
 
         recommended = movies[
-            movies['genres'].str.contains(top_genres, case=False, na=False) &
+            movies['genres'].apply(match_genre) &
             (~movies['movie_id'].isin(rated_movie_ids))
         ]
 
-        # 🔥 Fallback if not enough results
+        # 🔥 fallback if less results
         if recommended.shape[0] < 10:
             extra = movies[~movies['movie_id'].isin(rated_movie_ids)]
             recommended = pd.concat([recommended, extra]).drop_duplicates()
@@ -119,7 +112,7 @@ def recommend():
         return jsonify(recommended['title'].tolist())
 
     except Exception as e:
-        print("Error in recommend:", e)
+        print("Error:", e)
         return jsonify(["Error occurred"]), 500
 
 
