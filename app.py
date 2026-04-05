@@ -49,11 +49,19 @@ def recommend():
         user_ratings = ratings[ratings['user_id'] == user_id]
 
         # 🔥 NEW USER CASE
-        if user_ratings.empty:
-            # return top popular movies
-            popular = ratings.groupby('movie_id')['rating'].mean().sort_values(ascending=False).head(10)
-            recommended = movies[movies['movie_id'].isin(popular.index)]
-            return jsonify(recommended['title'].tolist())
+       if user_ratings.empty:
+    # Get top 10 popular movies
+           popular = (
+             ratings.groupby('movie_id')['rating']
+              .mean()
+              .sort_values(ascending=False)
+              .head(10)
+              .index
+            )
+
+         recommended = movies.set_index('movie_id').loc[popular]
+
+        return jsonify(recommended['title'].tolist())
 
         # Movies already rated
         rated_movie_ids = user_ratings['movie_id'].tolist()
