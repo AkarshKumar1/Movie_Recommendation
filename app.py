@@ -22,17 +22,38 @@ def load_data():
 
     print("Loading datasets...")
 
-    # Load movies
-    movies = pd.read_csv(os.path.join(BASE_DIR, "dataset", "movies.csv"))
+    # ✅ Load movies safely
+    try:
+        movies = pd.read_csv(os.path.join(BASE_DIR, "dataset", "movies.csv"))
+    except Exception as e:
+        print("Error loading movies:", e)
+        movies = pd.DataFrame(columns=["movie_id", "title", "genres"])
 
-    # Load ratings from PHP API
-    response = requests.get("https://akarshkumar.gt.tc/get_ratings.php")
-    ratings = pd.DataFrame(response.json())
+    # ✅ Load ratings from PHP API safely
+    try:
+        response = requests.get(
+            "https://akarshkumar.gt.tc/get_ratings.php",
+            timeout=10
+        )
 
-    # 🔥 Convert to correct types
-    ratings['user_id'] = ratings['user_id'].astype(int)
-    ratings['movie_id'] = ratings['movie_id'].astype(int)
-    ratings['rating'] = ratings['rating'].astype(float)
+        data = response.json()
+
+        if not data:
+            print("No ratings found → using empty dataset")
+            ratings = pd.DataFrame(columns=["user_id", "movie_id", "rating"])
+        else:
+            ratings = pd.DataFrame(data)
+
+            # Convert types safely
+            ratings['user_id'] = pd.to_numeric(ratings['user_id'], errors='coerce')
+            ratings['movie_id'] = pd.to_numeric(ratings['movie_id'], errors='coerce')
+            ratings['rating'] = pd.to_numeric(ratings['rating'], errors='coerce')
+
+            ratings = ratings.dropna()
+
+    except Exception as e:
+        print("Error fetching ratings:", e)
+        ratings = pd.DataFrame(columns=["user_id", "movie_id", "rating"])
 
     data_loaded = True
     print("Data loaded successfully")
@@ -55,11 +76,16 @@ def recommend():
 
         user_id = int(user_id)
 
-        # Get user's ratings
+        # ✅ Get user's ratings
         user_ratings = ratings[ratings['user_id'] == user_id]
 
-        # 🔥 If no ratings → show popular movies
+        # 🔥 CASE 1: No ratings → show popular movies
         if user_ratings.empty:
+
+            if ratings.empty:
+                # fallback if no ratings exist at all
+                return jsonify(movies.head(10)['title'].tolist())
+
             popular = (
                 ratings.groupby('movie_id')['rating']
                 .mean()
@@ -71,23 +97,24 @@ def recommend():
             recommended = movies[movies['movie_id'].isin(popular)]
             return jsonify(recommended['title'].tolist())
 
-        # 🔥 Movies already rated
+        # 🔥 CASE 2: User has ratings
+
         rated_movie_ids = user_ratings['movie_id'].tolist()
 
-        # 🔥 Top rated movies by user
+        # Top 3 rated movies
         top_movies = user_ratings.sort_values(by='rating', ascending=False).head(3)
         top_movie_ids = top_movies['movie_id'].tolist()
 
-        # 🔥 Get genres of top movies
+        # Get genres of top movies
         top_genres = movies[movies['movie_id'].isin(top_movie_ids)]['genres']
 
-        # 🔥 Recommend similar genre movies
+        # Recommend based on similar genres
         recommended = movies[
             (movies['genres'].isin(top_genres)) &
             (~movies['movie_id'].isin(rated_movie_ids))
         ]
 
-        # 🔥 Fallback if empty
+        # 🔥 Fallback if not enough
         if recommended.shape[0] < 10:
             extra = movies[~movies['movie_id'].isin(rated_movie_ids)]
             recommended = pd.concat([recommended, extra]).drop_duplicates()
@@ -97,7 +124,7 @@ def recommend():
         return jsonify(recommended['title'].tolist())
 
     except Exception as e:
-        print("Error:", e)
+        print("Error in recommend:", e)
         return jsonify(["Error occurred"]), 500
 
 
