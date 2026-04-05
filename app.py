@@ -87,35 +87,53 @@ def recommend():
 
         rated_movie_ids = user_ratings['movie_id'].tolist()
 
-        # Try smart recommendation
-        top_movie = user_ratings.sort_values(by='rating', ascending=False).iloc[0]
-        top_movie_id = top_movie['movie_id']
+        # ⭐ Get top 5 rated movies
+        top_movies = user_ratings.sort_values(by='rating', ascending=False).head(5)
 
-        top_movie_row = movies[movies['movie_id'] == top_movie_id]
+        # ⭐ Get genres of these movies (if match exists)
+        top_movie_ids = top_movies['movie_id'].tolist()
 
-        if not top_movie_row.empty:
-            top_genres = str(top_movie_row.iloc[0]['genres']).split('|')
+        matched_movies = movies[movies['movie_id'].isin(top_movie_ids)]
 
-            def is_similar(genres):
-                return any(g in str(genres).split('|') for g in top_genres)
+        genre_set = set()
+
+        for g in matched_movies['genres']:
+            for item in str(g).split('|'):
+                genre_set.add(item.strip())
+
+        # 🔥 If genres found → use them
+        if genre_set:
+
+            def match_genre(genres):
+                return any(g in str(genres).split('|') for g in genre_set)
 
             recommended = movies[
-                movies['genres'].apply(is_similar) &
+                movies['genres'].apply(match_genre) &
                 (~movies['movie_id'].isin(rated_movie_ids))
             ]
 
             if recommended.shape[0] >= 10:
                 return jsonify(recommended.head(10)['title'].tolist())
 
-        # 🔥 FINAL FALLBACK (GUARANTEED DIFFERENT RESULTS)
-        remaining = movies[~movies['movie_id'].isin(rated_movie_ids)]
+            # 🔥 FINAL FALLBACK (only if no match)
+            remaining = movies[~movies['movie_id'].isin(rated_movie_ids)]
 
-        if remaining.empty:
-            remaining = movies
+            if remaining.empty:
+                remaining = movies
 
-        recommended = remaining.sample(min(10, len(remaining)))
+            recommended = remaining.sample(min(10, len(remaining)))
 
-        return jsonify(recommended['title'].tolist())
+            return jsonify(recommended['title'].tolist())
+
+            # 🔥 FINAL FALLBACK (GUARANTEED DIFFERENT RESULTS)
+            remaining = movies[~movies['movie_id'].isin(rated_movie_ids)]
+
+            if remaining.empty:
+                remaining = movies
+
+            recommended = remaining.sample(min(10, len(remaining)))
+
+            return jsonify(recommended['title'].tolist())
 
     except Exception as e:
         print("Error:", e)
