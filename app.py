@@ -25,7 +25,7 @@ def load_data():
         print("Error loading movies:", e)
         movies = pd.DataFrame(columns=["movie_id", "title", "genres"])
 
-    # ✅ Load ratings from PHP API (ALWAYS FRESH)
+    # ✅ Load ratings from PHP API (LIVE DATA)
     try:
         response = requests.get(
             "https://akarshkumar.gt.tc/get_ratings.php",
@@ -61,7 +61,7 @@ def home():
 
 @app.route('/recommend', methods=['GET'])
 def recommend():
-    load_data()  # 🔥 ALWAYS reload fresh data
+    load_data()  # 🔥 ALWAYS fetch latest data
 
     try:
         user_id = request.args.get('user_id')
@@ -95,16 +95,17 @@ def recommend():
 
         rated_movie_ids = user_ratings['movie_id'].tolist()
 
-        # Top 3 rated movies
+        # ⭐ Top 3 rated movies
         top_movies = user_ratings.sort_values(by='rating', ascending=False).head(3)
         top_movie_ids = top_movies['movie_id'].tolist()
 
-        # Get genres of top movies
-        top_genres = movies[movies['movie_id'].isin(top_movie_ids)]['genres']
+        # 🔥 FIXED LOGIC: partial genre matching (IMPORTANT)
+        top_genres = "|".join(
+            movies[movies['movie_id'].isin(top_movie_ids)]['genres']
+        )
 
-        # Recommend based on similar genres (simple match)
         recommended = movies[
-            (movies['genres'].isin(top_genres)) &
+            movies['genres'].str.contains(top_genres, case=False, na=False) &
             (~movies['movie_id'].isin(rated_movie_ids))
         ]
 
